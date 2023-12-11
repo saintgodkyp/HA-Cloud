@@ -1,0 +1,67 @@
+<cib crm_feature_set="3.11.0" validate-with="pacemaker-3.7" epoch="61" num_updates="0" admin_epoch="0" cib-last-written="Sat Nov 11 16:39:47 2023" update-origin="controller1" update-client="cibadmin" update-user="root" have-quorum="1" dc-uuid="2">
+  <configuration>
+    <crm_config>
+      <cluster_property_set id="cib-bootstrap-options">
+        <nvpair id="cib-bootstrap-options-have-watchdog" name="have-watchdog" value="false"/>
+        <nvpair id="cib-bootstrap-options-dc-version" name="dc-version" value="2.1.2-ada5c3b36e2"/>
+        <nvpair id="cib-bootstrap-options-cluster-infrastructure" name="cluster-infrastructure" value="corosync"/>
+        <nvpair id="cib-bootstrap-options-cluster-name" name="cluster-name" value="ha_cluster"/>
+        <nvpair id="cib-bootstrap-options-stonith-enabled" name="stonith-enabled" value="false"/>
+        <nvpair id="cib-bootstrap-options-no-quorum-policy" name="no-quorum-policy" value="ignore"/>
+      </cluster_property_set>
+    </crm_config>
+    <nodes>
+      <node id="1" uname="controller1">
+        <instance_attributes id="nodes-1"/>
+      </node>
+      <node id="2" uname="controller2">
+        <instance_attributes id="nodes-2"/>
+      </node>
+    </nodes>
+    <resources>
+      <clone id="HAStorage-clone">
+        <primitive id="HAStorage" class="ocf" type="drbd" provider="linbit">
+          <instance_attributes id="HAStorage-instance_attributes">
+            <nvpair id="HAStorage-instance_attributes-drbd_resource" name="drbd_resource" value="drbd_rsc0"/>
+          </instance_attributes>
+          <operations>
+            <op name="demote" timeout="90" interval="0s" id="HAStorage-demote-interval-0s"/>
+            <op name="monitor" interval="5s" id="HAStorage-monitor-interval-5s"/>
+            <op name="notify" timeout="90" interval="0s" id="HAStorage-notify-interval-0s"/>
+            <op name="promote" timeout="90" interval="0s" id="HAStorage-promote-interval-0s"/>
+            <op name="reload" timeout="30" interval="0s" id="HAStorage-reload-interval-0s"/>
+            <op name="start" timeout="240" interval="0s" id="HAStorage-start-interval-0s"/>
+            <op name="stop" timeout="100" interval="0s" id="HAStorage-stop-interval-0s"/>
+          </operations>
+        </primitive>
+        <meta_attributes id="HAStorage-clone-meta_attributes">
+          <nvpair id="HAStorage-clone-meta_attributes-clone-max" name="clone-max" value="2"/>
+          <nvpair id="HAStorage-clone-meta_attributes-clone-node-max" name="clone-node-max" value="1"/>
+          <nvpair id="HAStorage-clone-meta_attributes-notify" name="notify" value="true"/>
+          <nvpair id="HAStorage-clone-meta_attributes-promotable" name="promotable" value="true"/>
+          <nvpair id="HAStorage-clone-meta_attributes-promoted-max" name="promoted-max" value="1"/>
+          <nvpair id="HAStorage-clone-meta_attributes-promoted-node-max" name="promoted-node-max" value="1"/>
+        </meta_attributes>
+      </clone>
+    </resources>
+    <constraints/>
+  </configuration>
+  <status>
+    <node_state id="2" uname="controller2" in_ccm="true" crmd="online" crm-debug-origin="do_state_transition" join="member" expected="member">
+      <transient_attributes id="2">
+        <instance_attributes id="status-2"/>
+      </transient_attributes>
+      <lrm id="2">
+        <lrm_resources/>
+      </lrm>
+    </node_state>
+    <node_state id="1" uname="controller1" in_ccm="true" crmd="online" crm-debug-origin="do_update_resource" join="member" expected="member">
+      <transient_attributes id="1">
+        <instance_attributes id="status-1"/>
+      </transient_attributes>
+      <lrm id="1">
+        <lrm_resources/>
+      </lrm>
+    </node_state>
+  </status>
+</cib>
