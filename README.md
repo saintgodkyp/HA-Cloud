@@ -19,3 +19,48 @@
 - **비용 효율성 확보**: NVMe 스토리지와 오픈소스 기반 기술을 활용하여 데이터 복제와 저장 성능을 향상시키고, 자체 관리형 인프라로 운영비를 절감합니다.
 
 전체적으로 이 문서는 교육 및 연구 환경에 최적화된 비용 효율적이고 고가용성을 갖춘 클라우드 인프라 구축 방안을 상세히 설명하고 있습니다.
+This document emphasizes the need for stable and highly available cloud infrastructure in university education environments and outlines the objectives and technical strategies to achieve this. To replace the high costs associated with commercial cloud services, the goal is to build a cost-effective, high-availability infrastructure using open-source technologies such as DRBD, Pacemaker, and OpenStack.
+
+**Key Points:**
+
+- **Storage Mirroring with DRBD and HAFS:**
+  - Real-time data replication is performed by configuring each node's NVMe storage with DRBD.
+  - DRBD synchronizes I/O operations at the block device level, ensuring the file system is mounted only on the primary node.
+  - HAFS file system is implemented on top of DRBD to support stable data storage.
+  - Services like Glance image data and Apache2 configuration files are stored on HAFS, managed by Pacemaker to start only after HAFS is ready.
+
+- **Service Management with Pacemaker:**
+  - VIPs (Virtual IPs) and key services are managed using Pacemaker to automate failover between nodes.
+  - Pacemaker continuously monitors service status and switches the primary node in case of anomalies, ensuring uninterrupted service access.
+  - VIPs are alternately bound on each node to prevent service interruptions.
+
+- **Load Balancing with HAProxy:**
+  - Key services such as Nova, Glance, and Neutron are routed through HAProxy to distribute load within the cluster.
+  - HAProxy operates bound to VIP-10G, routing service requests to each node and preventing traffic collisions between services.
+  - Services operate in a mix of Active-Active and Active-Standby modes, with Pacemaker continuously managing service status.
+
+- **Network Segmentation Using VIPs:**
+  - The roles of the 1G and 10G networks are separated.
+  - External-facing services like the Horizon dashboard are served over the 1G network.
+  - Internal data-intensive services like Glance, Nova, and Neutron use the 10G network.
+  - VIPs are utilized to appropriately separate internal and external traffic, preventing network collisions and optimizing bandwidth usage.
+
+- **Differentiated Service Availability:**
+  - Services are categorized based on importance, applying high-availability strategies accordingly.
+  - Temporary educational and research services operate with basic availability settings.
+  - Critical services requiring long-term operation utilize DRBD and Pacemaker for high stability.
+  - For example, Glance and Keystone run only on one node based on HAFS and DRBD, supporting automatic failover via Pacemaker.
+
+- **Optimized HA Configuration per Service:**
+  - Services like Neutron and Nova operate in Active-Active mode to enhance availability and scalability.
+  - Critical services use an Active-Standby approach to maintain data integrity and stable operation on a single node.
+
+- **Cost Efficiency:**
+  - NVMe storage configured with DRBD provides both data replication and storage performance.
+  - Open-source technologies replace expensive commercial cloud storage solutions, increasing cost efficiency.
+  - The OpenStack infrastructure leverages various services to provide functionality and availability comparable to commercial clouds while reducing operational costs through self-managed infrastructure.
+  - Existing hardware is maximally utilized considering the characteristics of educational institutions, reducing new investment costs and ensuring maintainability and scalability.
+
+**Summary:**
+
+Overall, the document details a comprehensive plan to build a cost-effective, highly available cloud infrastructure optimized for educational and research environments. By leveraging open-source technologies and differentiating service availability based on importance, the strategy aims to provide stability, scalability, and operational efficiency while minimizing costs.
